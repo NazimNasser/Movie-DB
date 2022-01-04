@@ -27,7 +27,7 @@ app.get('/time', (req, res)=> {
     res.send(time)
 })
  
-// route id
+// route ID
 app.get(['/hello', '/hello/:id'], (req, res)=> {
     const id = {status:200, message:`Hello, ${req.params.id || "Unknown"}`}
 
@@ -69,20 +69,45 @@ app.get("/movies/read", (req, res) => {
 
 // route get the movie by date
 app.get("/movies/read/by-date", (req, res) => {
+
     const sortByYear = movies.sort((a, b) => (a.year > b.year) ? 1 : -1)
     res.send({status:200, data: sortByYear})
 })
 
 // route get the movie by rating
 app.get("/movies/read/by-rating", (req, res) => {
+
     const sortByYear = movies.sort((a, b) => (a.rating > b.rating) ? -1 : 1)
     res.send({status:200, data: sortByYear})
 })
 
 // route get the movie by title
 app.get("/movies/read/by-title", (req, res) => {
+
     const sortByYear = movies.sort((a, b) => (a.title > b.title) ? 1 : -1)
     res.send({status:200, data: sortByYear})
+})
+
+// route get the movie by ID
+app.get("/movies/read/id/:id", (req, res) => {
+
+    const nameById = req.params.id;
+
+    if (nameById >=0 && nameById < movies.length) {
+        const response = {
+            status:200, data: movies[nameById]
+        };
+
+        res.send(response);
+    }
+    else {
+        const response = {
+            status:404, error:true, message:`the movie ${nameById} does not exist`
+        };
+
+
+        res.status(404).send(response);
+    }
 })
 
 // route edit the movie
