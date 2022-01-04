@@ -61,6 +61,26 @@ app.post('/movies/create', (req, res) => {
       res.send('Create the movie');
 });
 
+// route add the movie by title, year and rating
+app.get("/movies/add", (req, res) => {
+
+    let title = req.query.title,
+        year = req.query.year,
+        rating = req.query.rating;
+
+    if(title && year && year.length == 4 && !isNaN(year)){
+        if(rating && !isNaN(rating)) {
+            movies.push({title: title, year: year, rating: rating})
+            res.send({status:200, data: movies})
+        }else{
+            rating = 4;
+            movies.push({title: title, year: year, rating: rating})
+            res.send({status:200, data: movies})
+        }
+    }else
+        res.status(403).send({status:403, error:true, message:'you cannot create a movie without providing a title and a year'})
+})
+
 // route get the movie
 app.get("/movies/read", (req, res) => {
 
