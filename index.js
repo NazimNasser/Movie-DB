@@ -77,8 +77,9 @@ app.post("/movies/add", (req, res) => {
             movies.push({title: title, year: year, rating: rating})
             res.send({status:200, data: movies})
         }
-    }else
+    }else{
         res.status(403).send({status:403, error:true, message:'you cannot create a movie without providing a title and a year'})
+    }
 })
 
 // route get the movie
@@ -114,6 +115,7 @@ app.get("/movies/read/id/:id", (req, res) => {
     const nameById = req.params.id;
 
     if (nameById >=0 && nameById < movies.length) {
+        
         const response = {
             status:200, data: movies[nameById]
         };
@@ -136,6 +138,30 @@ app.put('/movies/update', (req, res) => {
     res.send('Update the data')
 });
 
+// route update the movie by id and value
+app.get('/movies/update/:id', (req,res) => {
+
+    const updateById = req.params.id
+    let title = req.query.title,
+        year = req.query.year,
+        rating = req.query.rating;
+
+    if(updateById >=0 && updateById < movies.length){
+        if(title && title != 'undefined'){
+            movies[updateById].title = title;
+        }
+        if(year && !isNaN(year) && year.length === 4){
+            movies[updateById].year = year;
+        }
+        if(rating && !isNaN(rating)){
+            movies[updateById].rating = rating
+        }
+        res.status(200).json({status:200, message:'Ok', data:movies})
+    }else{
+        res.status(404).json({status:404, error:true, message:`The movie ${updateById} does not exist`})
+    }
+})
+
 // route delete the movie
 app.delete('/movies/delete', (req, res) => {
 
@@ -143,9 +169,10 @@ app.delete('/movies/delete', (req, res) => {
 });
 
 // route delete the movie by id
-app.get('/movies/delete/:id', (req, res) => {
+app.delete('/movies/delete/:id', (req, res) => {
 
     const removeById = req.params.id
+
     if (removeById >=0 && removeById < movies.length) {
         movies.splice(removeById, 1);
         const response = {
