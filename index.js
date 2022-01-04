@@ -139,7 +139,7 @@ app.put('/movies/update', (req, res) => {
 });
 
 // route update the movie by id and value
-app.get('/movies/update/:id', (req,res) => {
+app.put('/movies/update/:id', (req,res) => {
 
     const updateById = req.params.id
     let title = req.query.title,
