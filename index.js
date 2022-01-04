@@ -67,6 +67,24 @@ app.get("/movies/read", (req, res) => {
     res.send({status:200, data: movies})
 })
 
+// route get the movie by date
+app.get("/movies/read/by-date", (req, res) => {
+    const sortByYear = movies.sort((a, b) => (a.year > b.year) ? 1 : -1)
+    res.send({status:200, data: sortByYear})
+})
+
+// route get the movie by rating
+app.get("/movies/read/by-rating", (req, res) => {
+    const sortByYear = movies.sort((a, b) => (a.rating > b.rating) ? -1 : 1)
+    res.send({status:200, data: sortByYear})
+})
+
+// route get the movie by title
+app.get("/movies/read/by-title", (req, res) => {
+    const sortByYear = movies.sort((a, b) => (a.title > b.title) ? 1 : -1)
+    res.send({status:200, data: sortByYear})
+})
+
 // route edit the movie
 app.put('/movies/update', (req, res) => {
 
