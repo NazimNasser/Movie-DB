@@ -62,7 +62,7 @@ app.post('/movies/create', (req, res) => {
 });
 
 // route add the movie by title, year and rating
-app.get("/movies/add", (req, res) => {
+app.post("/movies/add", (req, res) => {
 
     let title = req.query.title,
         year = req.query.year,
@@ -140,6 +140,28 @@ app.put('/movies/update', (req, res) => {
 app.delete('/movies/delete', (req, res) => {
 
     res.send('Delete the movie')
+});
+
+// route delete the movie by id
+app.get('/movies/delete/:id', (req, res) => {
+
+    const removeById = req.params.id
+    if (removeById >=0 && removeById < movies.length) {
+        movies.splice(removeById, 1);
+        const response = {
+            status:200, data: movies
+        };
+
+        res.send(response);
+    }
+    else {
+        const response = {
+            status:404, error:true, message: `the movie ${removeById} does not exist`
+        };
+
+
+        res.status(404).send(response);
+    }
 });
 
 app.listen(port)
