@@ -209,7 +209,7 @@ app.put('/movies/update/:id', (req,res) => {
         year = req.query.year,
         rating = req.query.rating;
     movies.findById(updateById)
-        .then(updEement => {
+        .then(async updEement => {
             if(title && title != 'undefined'){
                 updEement.title = title;
             }
@@ -219,7 +219,7 @@ app.put('/movies/update/:id', (req,res) => {
             if(rating && !isNaN(rating)){
                 updEement.rating = rating
             }
-            updEement.save()
+            await updEement.save()
             movies.find()
             .then(moviesList =>
                 res.send({status:200, data: moviesList})
