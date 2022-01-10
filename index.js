@@ -36,6 +36,100 @@ var movies = mongoose.model('movies', moviesSchema );
 //     { title: 'الإرهاب والكباب‎', year: 1992, rating: 6.2 }
 // ]
 
+
+const checkAuth = (username,password)=>{
+    let acceptPass = false;
+    let acceptUsername = false;
+    if(!username) return -1//not authorized if username missed
+     for(let i=0;i<users.length-1;i++){
+         if(username == users[i].username)
+             if(password== users[i].password) acceptPass = true
+             acceptUsername=true
+             break
+     }
+     if(acceptPass&&acceptUsername) return 0;//acceptable username and pass
+     if(acceptUsername) return 1;//acceptable username but wrong pass
+     return -1;//wrong username and password
+ }
+
+/* users area */
+
+
+
+const users = [
+    {username: 'Nazim', password: 'Nazim75'},
+    {username: 'nour', password: 'nour66'},
+    {username: 'samir', password: 'samir34'}
+]
+
+app.get("/users/read", (req, res) => {
+
+    res.send({status:200, data: users})
+})
+
+app.delete('/users/delete/:id', (req, res) => {
+
+    const removeById = req.params.id
+
+    if (removeById >=0 && removeById < users.length) {
+        users.splice(removeById, 1);
+        const response = {
+            status:200, data: users
+        };
+
+        res.send(response);
+    }
+    else {
+        const response = {
+            status:404, error:true, message: `the user ID: ${removeById} does not exist`
+        };
+
+
+        res.status(404).send(response);
+    }
+});
+
+app.put('/users/update/:id', (req,res) => {
+
+    const updateById = req.params.id
+    let username = req.query.username,
+        password = req.query.password;
+        
+    if(updateById >=0 && updateById < users.length){
+        if(username && username != 'undefined'){
+            users[updateById].username = username;
+        }
+        if(password && password.length > 7){
+            users[updateById].password = password;
+        }
+        res.status(200).json({status:200, message:'Ok', data:users})
+    }else{
+        res.status(404).json({status:404, error:true, message:`The user ID: ${updateById} does not exist`})
+    }
+})
+
+app.post("/users/add", (req, res) => {
+
+    let username = req.query.username,
+        password = req.query.password;
+
+    if(username && password && password.length > 7){
+
+        users.push({username: username, password: password})
+        res.send({status:200, data: users})
+
+    }else{
+        res.status(403).send({status:403, error:true, message:'you cannot sign up without providing a username and a password'})
+    }
+})
+/* users area */
+
+
+
+
+
+
+
 app.get('/', (req, res)=> {
     
     res.send('ok')
@@ -99,7 +193,10 @@ app.post("/movies/add", (req, res) => {
     let title = req.query.title,
         year = req.query.year,
         rating = req.query.rating;
-
+    let authorized =checkAuth(req.query.username,req.query.password)
+    if(authorized == -1) res.status(500).send({status:500,error:true,message:'you cannot create movie without providing exist username and password'})
+    else if(authorized == 1) res.status(500).send({status:500,error:true,message:'wrong password , unauthorized operation'})
+    else
     if(title && year && year.length == 4 && !isNaN(year)){
         movies.create({
             title : title,
@@ -208,6 +305,10 @@ app.put('/movies/update/:id', (req,res) => {
     let title = req.query.title,
         year = req.query.year,
         rating = req.query.rating;
+    let authorized =checkAuth(req.query.username,req.query.password)
+    if(authorized == -1) res.status(500).send({status:500,error:true,message:'you cannot create movie without providing exist username and password'})
+    else if(authorized == 1) res.status(500).send({status:500,error:true,message:'wrong password , unauthorized operation'})
+    else
     movies.findById(updateById)
         .then(async updEement => {
             if(title && title != 'undefined'){
@@ -256,7 +357,10 @@ app.delete('/movies/delete', (req, res) => {
 app.delete('/movies/delete/:id', (req, res) => {
 
     const removeById = req.params.id
-
+    let authorized =checkAuth(req.query.username,req.query.password)
+    if(authorized == -1) res.status(500).send({status:500,error:true,message:'you cannot create movie without providing exist username and password'})
+    else if(authorized == 1) res.status(500).send({status:500,error:true,message:'wrong password , unauthorized operation'})
+    else
     movies.remove({_id: removeById}).then(() => {
         movies.find()
         .then(moviesList =>
